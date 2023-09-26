@@ -14,7 +14,13 @@ _Image by [Jill Wellington](https://pixabay.com/users/jillwellington-334088/)_
 
 ### Requisites
 
-* TBD
+* Get a discord API token
+* Run `pipenv install`
+* Configure your .snowball.conf file
+
+### Initializing
+
+* pipenv run ./main.py
 
 ## Bot Usage
 

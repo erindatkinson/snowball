@@ -1,0 +1,13 @@
+[core]
+name = snowball-bot
+log_level = INFO
+
+[discord]
+server = serverid
+channel = channelid
+token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaXNjb3JkLXNoaXQiOiJzb21lIGZ1Y2tpbmcgYXBpIHRva2VuIn0.ZNzYeAB71wLXi_YqB-fFKUQGJmrO9GCie5kcpQlMb2c
+
+[slack]
+team = teamid
+channel = channelid
+token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzbGFjay1zaGl0Ijoic29tZSBmdWNraW5nIHNsYWNrIHRva2VuIn0.GnF97mlsNAaDkJhN_6IrMloStLQhzVSEgMChJ9NnxUI
