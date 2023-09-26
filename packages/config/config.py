@@ -14,14 +14,17 @@ def init(config:str)->(None|Exception):
     level = parser.get("core", "log_level", fallback="WARN").upper()
     logging.basicConfig(level=logging.getLevelNamesMapping()[level])
    
+   logging.info("configuring services")
    hasService = False
    if "discord" in parser.sections():
      services["discord"] = parser["discord"]
+     logging.info("discord service configured")
      hasService = True
 
    # adding for future integration
    if "slack" in parser.sections():
      services["slack"] = parser["slack"]
+     logging.info("slack service configured")
      hasService = True
 
    if not hasService:
