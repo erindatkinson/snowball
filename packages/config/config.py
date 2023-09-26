@@ -5,6 +5,7 @@ import logging
 services = {}
 
 def init(config:str)->(None|Exception):
+   """initializes the configuration for the bot"""
    parser = ConfigParser()
    with open(config) as fp_in:
     parser.readfp(fp_in)
@@ -25,13 +26,3 @@ def init(config:str)->(None|Exception):
 
    if not hasService:
      raise Exception("no service defined, please add a discord or slack section to your config")
-   
-   
-
-
-
-
-
-
-    
-   
