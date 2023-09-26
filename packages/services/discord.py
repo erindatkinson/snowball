@@ -1,12 +1,14 @@
-from discord import Client, Intents, Message, PartialEmoji
+"""module managing connecting to the discord api"""
+import logging
+from discord import Client, Message, Intents, PartialEmoji
 from packages.counting.counting import check_next_count, reset_count
 from packages.config.config import services
-import logging
 
 class DiscordClient(Client):
+    """the client for the discord api"""
     async def on_ready(self):
+        """called when the client is ready to send and recieve messages"""
         logging.info("bot started")
-    
     async def on_message(self, message:Message):
         """handle new messages in the configured channel"""
         if message.channel != services["discord"]["channel"]:
@@ -20,7 +22,9 @@ class DiscordClient(Client):
         else:
             reset_count()
             await message.channel.send("That wasn't the correct count, the cycle begins anew.", mention_author=True)
-        
 
-def new_client(conf:dict)->None:
-    return
+async def new_client(conf:dict)->DiscordClient:
+    """creates a new discord client"""
+    bot = DiscordClient(intents=Intents.all())
+    await bot.login(token=conf["token"])
+    return bot
