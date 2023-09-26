@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 fire = "*"
+"discord.py" = "*"
 
 [dev-packages]
 
