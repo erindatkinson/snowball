@@ -4,4 +4,7 @@ services:
     build:
       context: .
     image: snowball-bot:latest
+    volumes:
+      - ./data:/root/data
+      
     
