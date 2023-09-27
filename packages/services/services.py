@@ -1,6 +1,7 @@
 """module to manage main interface to the services package"""
 
-from .discord import new_client
+from .discord import run
+
 clients = {
-    "discord": new_client,
+    "discord": run,
 }

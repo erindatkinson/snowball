@@ -21,10 +21,12 @@ class DiscordClient(Client):
             await message.add_reaction(PartialEmoji(name='✅'))
         else:
             reset_count()
-            await message.channel.send("That wasn't the correct count, the cycle begins anew.", mention_author=True)
+            await message.channel.send(
+                "That wasn't the correct count, the cycle begins anew.", mention_author=True)
 
-async def new_client(conf:dict)->DiscordClient:
+def run()->None:
     """creates a new discord client"""
-    bot = DiscordClient(intents=Intents.all())
-    await bot.login(token=conf["token"])
-    return bot
+    bot = DiscordClient(
+        intents=Intents(
+            value=int(services["discord"]["permissions_integer"])))
+    bot.run(token=services["discord"]["token"])
