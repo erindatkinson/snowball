@@ -1,9 +1,12 @@
 """module to handle the ingress of configuration and setup of the logger"""
 from configparser import ConfigParser
-import logging
+from logging import info
 from packages.errors.errors import ConfigError
+from .logging import init_logs
 
-services = {}
+services:dict[str, dict[str, str]] = {}
+core:dict[str, str]={}
+
 
 def init(config:str)->(None|Exception):
     """initializes the configuration for the bot"""
@@ -13,22 +16,21 @@ def init(config:str)->(None|Exception):
         parser.read_file(fp_in)
 
     name = parser.get("core", "name", fallback="snowball")
-    level = parser.get("core", "log_level", fallback="WARN").upper()
-    logging.basicConfig(
-        level=logging.getLevelNamesMapping()[level],
-        format=f"{name} [%(levelname)s] - %(message)s")
+    core["name"] = name
 
-    logging.info("configuring services")
+    level = parser.get("core", "log_level", fallback="WARN").upper()
+    init_logs(name, level)
+    info("configuring services")
     has_service = False
     if "discord" in parser.sections():
-        services["discord"] = parser["discord"]
-        logging.info("discord service configured")
+        services["discord"] = dict(parser["discord"])
+        info("discord service configured")
         has_service = True
 
     # adding for future integration
     if "slack" in parser.sections():
-        services["slack"] = parser["slack"]
-        logging.info("slack service configured")
+        services["slack"] = dict(parser["slack"])
+        info("slack service configured")
         has_service = True
 
     if not has_service:

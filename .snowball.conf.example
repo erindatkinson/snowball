@@ -3,9 +3,10 @@ name = snowball-bot
 log_level = INFO
 
 [discord]
-server = serverid
-channel = channelid
+application_id = 12345
+public_key=123abc
 token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaXNjb3JkLXNoaXQiOiJzb21lIGZ1Y2tpbmcgYXBpIHRva2VuIn0.ZNzYeAB71wLXi_YqB-fFKUQGJmrO9GCie5kcpQlMb2c
+permissions_integer = 75840
 
 [slack]
 team = teamid
