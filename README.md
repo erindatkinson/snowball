@@ -3,7 +3,7 @@
 A discord bot to enable a shared, sisyphean task of "number go up"
 
 ![](assets/crystal-ball-4006971_1920.jpg)
-_Image by [Jill Wellington](https://pixabay.com/users/jillwellington-334088/)_
+_Image by [Jill Wellington][image-credit]_
 
 > _"Then if the countess is Sisyphus," Daisy concluded, "I suppose we're..."
 > "The boulder," Lady Westcliff said succinctly._
@@ -17,7 +17,7 @@ _Image by [Jill Wellington](https://pixabay.com/users/jillwellington-334088/)_
 * Python 3.8+
 * Docker + docker-compose
 * If you plan to run this on your own:
-    * [Set up discord bot account](bot-account)
+    * [Set up discord bot account][discord-bot]
     * :warning: This, again, is only if you intend to host the bot yourself.
 * Pipenv
     * Install pipenv `pip install pipenv`
@@ -79,7 +79,7 @@ I just restarted, your last valid count was 0
 * Message that is just an integer of the expected next count
     * eg. (1, 2, 3, 4, etc.)
 * Reverse Polish Notation math that resolves to the expected next count
-  * This is just shimmed out to the linux `dc` [desk calculator](desk-calculator), so any math that is valid for this is valid for snowball
+  * This is just shimmed out to the linux `dc` [desk calculator][desk-calculator], so any math that is valid for this is valid for snowball
 
 #### Invalid countings:
 
@@ -99,5 +99,7 @@ I just restarted, your last valid count was 0
 
 💜
 
-[bot-account][https://discordpy.readthedocs.io/en/latest/discord.html]
-[desk-calculator][https://www.gnu.org/software/bc/manual/dc-1.05/html_mono/dc.html#SEC1]
+
+[image-credit]: https://pixabay.com/users/jillwellington-334088/
+[desk-calculator]: https://www.gnu.org/software/bc/manual/dc-1.05/html_mono/dc.html#SEC1
+[discord-bot]: https://discordpy.readthedocs.io/en/latest/discord.html
