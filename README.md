@@ -61,7 +61,7 @@ I just restarted, your last valid count was 0
 @JannaBNana (11:14) 5
 ❎
 
-@Snowball[bot] (11:14) The cycle begins again
+@Snowball[bot] (11:14) The cycle begins anew
 
 @MertinsMcHuman (11:15) 1
 ✅
