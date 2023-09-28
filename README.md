@@ -79,7 +79,7 @@ I just restarted, your last valid count was 0
 * Message that is just an integer of the expected next count
     * eg. (1, 2, 3, 4, etc.)
 * Reverse Polish Notation math that resolves to the expected next count
-  * This is just shimmed out to the linux `dc` [desk calculator][desk-calculator], so any math that is valid for this is valid for snowball
+  * This is just shimmed out to the linux `dc` [desk calculator](desk-calculator), so any math that is valid for this is valid for snowball
 
 #### Invalid countings:
 
