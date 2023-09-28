@@ -1,6 +1,7 @@
 """module maaging counting state"""
 from subprocess import run, CalledProcessError
 from logging import debug
+from re import search
 
 def parse_message(message:str) -> tuple[int, bool]:
     """parses message and uses linux dc to calculate math
@@ -18,6 +19,13 @@ def parse_message(message:str) -> tuple[int, bool]:
         int(message[0])
     except ValueError:
         return (-1, False)
+
+    # check to see if there's like text in the message after some math
+    pattern = r"[a-zA-Z]"
+    search_match = search(pattern, message)
+    if search_match is not None:
+        math = message[:search_match.start()]
+        message = math
     
     # shim out to linux desk calculator to see if message is postfix math
     try:

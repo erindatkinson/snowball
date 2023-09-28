@@ -40,23 +40,31 @@ I just restarted, your last valid count was {count}"""
         # Try to get lock, if unable, mark as invalid
         if self._lock.acquire(block=False):
             count, user = self.db_conn.get_current_count(str(message.guild.id))
-            if user == message.author.id:
+            this_count, countable = parse_message(message.content)
+            if not countable:
+                self._lock.release()
+                return
+            if user == str(message.author.id):
                 await message.add_reaction('🎭')
                 await message.channel.send("a counting so nice you did it twice?")
             else:
-                this_count, countable = parse_message(message.content)
-                if not countable:
-                    self._lock.release()
-                    return
                 if this_count == -1:
+                    self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
                     await message.channel.send('the cycle begins anew (or it would if the reset was hooked in)')
                 elif this_count == count + 1:
+                    self.db_conn.increment_count(
+                        str(message.guild.id),
+                        str(message.author.id),
+                        count+1)
                     await message.add_reaction('✅')
-                    await message.channel.send("the count isn't going up yet but it would, congrats!")
                 else:
+                    self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
                     await message.channel.send('the cycle begins anew (or it would if the reset was hooked in)')
+            
+            
+            
             self._lock.release()
         else:
             await message.add_reaction('🌨')
