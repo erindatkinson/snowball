@@ -61,7 +61,7 @@ I just restarted, your last valid count was {count}"""
                 else:
                     self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
-                    await message.channel.send('the cycle begins anew (or it would if the reset was hooked in)')
+                    await message.channel.send('the cycle begins anew')
             
             
             
