@@ -54,6 +54,9 @@ I just restarted, your last valid count was {count}"""
                 elif this_count == count + 1:
                     await message.add_reaction('✅')
                     await message.channel.send("the count isn't going up yet but it would, congrats!")
+                else:
+                    await message.add_reaction('❎')
+                    await message.channel.send('the cycle begins anew (or it would if the reset was hooked in)')
             self._lock.release()
         else:
             await message.add_reaction('🌨')
