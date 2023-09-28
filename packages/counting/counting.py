@@ -14,11 +14,12 @@ def parse_message(message:str) -> tuple[int, bool]:
     except ValueError:
         debug("message not wholly integer")
 
-    # check if the first character is a digit if not, return not countable
-    try:
-        int(message[0])
-    except ValueError:
-        return (-1, False)
+    if message[0] != "_":
+        # check if the first character is a digit if not, return not countable
+        try:
+            int(message[0])
+        except ValueError:
+            return (-1, False)
 
     # check to see if there's like text in the message after some math
     pattern = r"[a-zA-Z]"
@@ -26,7 +27,7 @@ def parse_message(message:str) -> tuple[int, bool]:
     if search_match is not None:
         math = message[:search_match.start()]
         message = math
-    
+
     # shim out to linux desk calculator to see if message is postfix math
     try:
         data = run(["dc", "-e", message + " p"], capture_output=True, check=True)
