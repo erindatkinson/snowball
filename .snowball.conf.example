@@ -10,6 +10,7 @@ token               = lHfah6HaRYg4uJy6w6O3Vdb0009wPL1Pt1rdqcRE7qZ7tm2.YhTnLeAvEd
 permissions_integer = 75840
 
 # Slack integration is not supported currently, this is only added for future compatability.
+# You should remove this section before running.
 [slack]
 team = teamid
 channel = channelid
