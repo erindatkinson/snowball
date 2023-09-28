@@ -8,7 +8,7 @@ _Image by [Jill Wellington][image-credit]_
 > _"Then if the countess is Sisyphus," Daisy concluded, "I suppose we're..."
 > "The boulder," Lady Westcliff said succinctly._
 >
-> -Lisa Kleypas, It Happened One Autumn 
+> -Lisa Kleypas, It Happened One Autumn
 
 ## Installation
 
@@ -17,20 +17,20 @@ _Image by [Jill Wellington][image-credit]_
 * Python 3.8+
 * Docker + docker-compose
 * If you plan to run this on your own:
-    * [Set up discord bot account][discord-bot]
-    * :warning: This, again, is only if you intend to host the bot yourself.
+  * [Set up discord bot account][discord-bot]
+  * :warning: This, again, is only if you intend to host the bot yourself.
 * Pipenv
-    * Install pipenv `pip install pipenv`
-    * Run `pipenv install`
+  * Install pipenv `pip install pipenv`
+  * Run `pipenv install`
 * Configure your .snowball.conf file
-    * An example [.snowball.conf.example](./.snowball.conf.example) has been provided with the expected configuration variables.
-    * (you likely won't need to change the permissions_integer)
+  * An example [.snowball.conf.example](./.snowball.conf.example) has been provided with the expected configuration variables.
+  * (you likely won't need to change the permissions_integer)
 
 ## Building
 
 The bot is currently set up to run in a docker container for your convenience, but isn't required to run if you'd rather set up a service with it. These commands all assume you'll be running in the container.
 
-*  Run `make build`
+* Run `make build`
 
 ### Initializing locally
 
@@ -42,7 +42,7 @@ The premise of the bot interaction is a shared channel of people trying to alter
 
 chat example:
 
-```
+```text
 @Snowball[bot] (11:00:00) Hello from Snowball bot.
 I just restarted, your last valid count was 0
 
@@ -78,24 +78,24 @@ The snowball bot currently only allows for a single channel in a server to be th
 
 ### Counting
 
-#### Valid countings:
+#### Valid countings
 
 * Message that is just an integer of the expected next count
-    * eg. (1, 2, 3, 4, etc.)
+  * eg. (1, 2, 3, 4, etc.)
 * Reverse Polish Notation math that resolves to the expected next count
-    * This is just shimmed out to the linux `dc` [desk calculator][desk-calculator], so any math that is valid for this is valid for snowball
-    * `dc` doesn't use the `-` symbol for negative numbers, but the `_`  and only used `-` as a subtraction operator, so in the above example:
-        * `_3 _2 * 3 -`
-        * negative 3 times negative 2 equals 6
-        * 6 minus 3 equals 3
-        * which is the expected next count
+  * This is just shimmed out to the linux `dc` [desk calculator][desk-calculator], so any math that is valid for this is valid for snowball
+  * `dc` doesn't use the `-` symbol for negative numbers, but the `_`  and only used `-` as a subtraction operator, so in the above example:
+    * `_3 _2 * 3 -`
+    * negative 3 times negative 2 equals 6
+    * 6 minus 3 equals 3
+    * which is the expected next count
 
-#### Invalid countings:
+#### Invalid countings
 
 * Message that is just an integer not of the expected next count
 * Reverse Polish Notation math that does not resolves to the expected next count
 
-#### Ignored messaged:
+#### Ignored messaged
 
 * Any message that doesn't start with either a digit or a `_` (dc uses `_`` for negative numbers)
 
