@@ -35,4 +35,3 @@ def init(config:str)->(None|Exception):
 
     if not has_service:
         raise ConfigError("no service defined, please add a service to your config")
-

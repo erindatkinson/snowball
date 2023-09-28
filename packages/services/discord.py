@@ -33,10 +33,10 @@ I just restarted, your last valid count was {count}"""
         """handle new messages in the configured channel"""
         if message.channel.name != services["discord"]["channel"]:
             return
-        
+
         if message.author.id == self.user.id:
             return
-    
+
         # Try to get lock, if unable, mark as invalid
         if self._lock.acquire(block=False):
             count, user = self.db_conn.get_current_count(str(message.guild.id))
@@ -61,14 +61,10 @@ I just restarted, your last valid count was {count}"""
                 else:
                     self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
-                    await message.channel.send('the cycle begins anew')
-            
-            
-            
+                    await message.channel.send('the cycle begins anew')         
             self._lock.release()
         else:
             await message.add_reaction('🌨')
-         
 
 def run()->None:
     """creates a new discord client"""

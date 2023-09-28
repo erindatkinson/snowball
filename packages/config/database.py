@@ -1,7 +1,7 @@
 """module to manage database"""
 from logging import debug
 from sqlite3 import connect, Connection, IntegrityError
-class Database(object):
+class Database:
     """the object to manage the access of the database"""
     conn:Connection
 
@@ -57,6 +57,3 @@ class Database(object):
             WHERE external_id = ?"""
         cur = self.conn.cursor()
         cur.execute(reset, (external_id,))
-
-
-
