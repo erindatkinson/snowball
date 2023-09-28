@@ -2,7 +2,7 @@
 
 A discord bot to enable a shared, sisyphean task of "number go up"
 
-![](assets/crystal-ball-4006971_1920.jpg)
+![image of a glass ball on a layer of snow with a blurry set of trees in the background, a few trees are visible upside down seen through the glass ball](assets/crystal-ball-4006971_1920.jpg)
 _Image by [Jill Wellington][image-credit]_
 
 > _"Then if the countess is Sisyphus," Daisy concluded, "I suppose we're..."
@@ -72,6 +72,10 @@ I just restarted, your last valid count was 0
 @Snowball[bot] (11:15) A counting so nice, you made it twice?
 ```
 
+### Channels
+
+The snowball bot currently only allows for a single channel in a server to be the counting server, it looks for the channel configured in the `.snowball.conf` file under the `discord.channel` path, any messages outside of that channel are ignored.
+
 ### Counting
 
 #### Valid countings:
@@ -85,7 +89,6 @@ I just restarted, your last valid count was 0
         * negative 3 times negative 2 equals 6
         * 6 minus 3 equals 3
         * which is the expected next count
-
 
 #### Invalid countings:
 
@@ -104,7 +107,6 @@ I just restarted, your last valid count was 0
 * ❎: Unfortunately you did not make the correct count, the count for your server has been reset to zero and the sisyphean ordeal must begin anew.
 
 💜
-
 
 [image-credit]: https://pixabay.com/users/jillwellington-334088/
 [desk-calculator]: https://www.gnu.org/software/bc/manual/dc-1.05/html_mono/dc.html#SEC1
