@@ -3,11 +3,13 @@ name = snowball-bot
 log_level = INFO
 
 [discord]
-application_id = 12345
-public_key=123abc
-token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkaXNjb3JkLXNoaXQiOiJzb21lIGZ1Y2tpbmcgYXBpIHRva2VuIn0.ZNzYeAB71wLXi_YqB-fFKUQGJmrO9GCie5kcpQlMb2c
+channel             = valid-counting-channel-name
+application_id      = 1234567890123456789
+public_key          = 05703347cc2c89048780da12bcc8a3182d349d255bfa2ef3f79afa0b7f281e0e
+token               = lHfah6HaRYg4uJy6w6O3Vdb0009wPL1Pt1rdqcRE7qZ7tm2.YhTnLeAvEdMWjsD7HwLHiS3
 permissions_integer = 75840
 
+# Slack integration is not supported currently, this is only added for future compatability.
 [slack]
 team = teamid
 channel = channelid
