@@ -7,7 +7,6 @@ from .logging import init_logs
 services:dict[str, dict[str, str]] = {}
 core:dict[str, str]={}
 
-
 def init(config:str)->(None|Exception):
     """initializes the configuration for the bot"""
     parser = ConfigParser()
@@ -15,11 +14,12 @@ def init(config:str)->(None|Exception):
     with open(config, encoding='utf-8') as fp_in:
         parser.read_file(fp_in)
 
-    name = parser.get("core", "name", fallback="snowball")
-    core["name"] = name
+    core["name"] = parser.get("core", "name", fallback="snowball")
+    core["db_file"] = parser.get("core", "db_file", fallback="data/snowball.db")
+    core["log_level"] = parser.get("core", "log_level", fallback="WARN").upper()
 
-    level = parser.get("core", "log_level", fallback="WARN").upper()
-    init_logs(name, level)
+    init_logs(core["name"], core["log_level"])
+
     info("configuring services")
     has_service = False
     if "discord" in parser.sections():
@@ -35,3 +35,4 @@ def init(config:str)->(None|Exception):
 
     if not has_service:
         raise ConfigError("no service defined, please add a service to your config")
+

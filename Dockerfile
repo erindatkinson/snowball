@@ -1,4 +1,6 @@
 FROM python:latest
+RUN apt update && apt upgrade
+RUN apt install -y dc
 WORKDIR /root
 COPY ./packages /root/packages
 COPY ./.snowball.conf .

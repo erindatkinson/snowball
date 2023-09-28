@@ -1,28 +1,63 @@
 """module managing connecting to the discord api"""
 import logging
-from discord import Client, Intents, Message
-from packages.config.config import services
+from multiprocessing import Lock
+from discord import Client, Intents, Message, PartialEmoji
+from packages.config.config import services, core
+from packages.config.database import Database
+from packages.counting.counting import parse_message
 
 class DiscordClient(Client):
     """the client for the discord api"""
+
+    def __init__(self, intents: Intents):
+        self._lock = Lock()
+        self.db_conn = Database(core["db_file"])
+        super().__init__(intents=intents)
+
     async def on_ready(self):
         """called when the client is ready to send and recieve messages"""
         logging.info("bot started")
-        for channel in self.get_all_channels():
-            if channel.name == services["discord"]["channel"]:
-                await channel.send(
-                    "Hello from the Snowball bot, I just restarted and your last valid count was #")
+        self.fetch_guilds()
+        guilds = [guild async for guild in self.fetch_guilds()]
+        for guild in guilds:
+            self.db_conn.initialize_server(str(guild.id), "discord")
+            channels = await guild.fetch_channels()
+            for channel in channels:
+                if channel.name == services["discord"]["channel"]:
+                    count, _ = self.db_conn.get_current_count(str(guild.id))
+                    msg = f"""Hello from Snowball bot.
+I just restarted, your last valid count was {count}"""
+                    await channel.send(msg)
 
     async def on_message(self, message:Message):
         """handle new messages in the configured channel"""
         if message.channel.name != services["discord"]["channel"]:
             return
-
+        
         if message.author.id == self.user.id:
             return
     
-        await message.channel.send(
-            "hello! I will respond to numbers in this channel when that feature has been added")
+        # Try to get lock, if unable, mark as invalid
+        if self._lock.acquire(block=False):
+            count, user = self.db_conn.get_current_count(str(message.guild.id))
+            if user == message.author.id:
+                await message.add_reaction('🎭')
+                await message.channel.send("a counting so nice you did it twice?")
+            else:
+                this_count, countable = parse_message(message.content)
+                if not countable:
+                    self._lock.release()
+                    return
+                if this_count == -1:
+                    await message.add_reaction('❎')
+                    await message.channel.send('the cycle begins anew (or it would if the reset was hooked in)')
+                elif this_count == count + 1:
+                    await message.add_reaction('✅')
+                    await message.channel.send("the count isn't going up yet but it would, congrats!")
+            self._lock.release()
+        else:
+            await message.add_reaction('🌨')
+         
 
 def run()->None:
     """creates a new discord client"""
