@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 fire = "*"
 "discord.py" = "*"
+python-dotenv = "*"
 
 [dev-packages]
 
