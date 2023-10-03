@@ -1,6 +1,7 @@
 .vscode/
 .snowball.conf
 data/
+docker-compose.override.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

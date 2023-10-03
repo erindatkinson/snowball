@@ -22,9 +22,8 @@ _Image by [Jill Wellington][image-credit]_
 * Pipenv
   * Install pipenv `pip install pipenv`
   * Run `pipenv install`
-* Configure your .snowball.conf file
-  * An example [.snowball.conf.example](./.snowball.conf.example) has been provided with the expected configuration variables.
-  * (you likely won't need to change the permissions_integer)
+* Configure your docker-compose.override.yml file
+  * An example [docker-compose.override.example.yml](./docker-compose.override.example.yml) has been provided with the expected configuration variables.
 
 ## Building
 
@@ -74,7 +73,7 @@ I just restarted, your last valid count was 0
 
 ### Channels
 
-The snowball bot currently only allows for a single channel in a server to be the counting server, it looks for the channel configured in the `.snowball.conf` file under the `discord.channel` path, any messages outside of that channel are ignored.
+The snowball bot currently only allows for a single channel in a server to be the counting server, it looks for the channel configured in the `docker-compose.override.yml` file under the `BOT_DISCORD_CHANNEL` variable, any messages outside of that channel are ignored.
 
 ### Counting
 

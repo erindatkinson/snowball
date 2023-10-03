@@ -1,17 +1,17 @@
 """module managing connecting to the discord api"""
 import logging
 from multiprocessing import Lock
-from discord import Client, Intents, Message, PartialEmoji
-from packages.config.config import services, core
+from discord import Client, Intents, Message
 from packages.config.database import Database
 from packages.counting.counting import parse_message
 
 class DiscordClient(Client):
     """the client for the discord api"""
 
-    def __init__(self, intents: Intents):
+    def __init__(self, configs, intents: Intents):
         self._lock = Lock()
-        self.db_conn = Database(core["db_file"])
+        self.configs = configs
+        self.db_conn = Database(configs.get("database"))
         super().__init__(intents=intents)
 
     async def on_ready(self):
@@ -23,7 +23,7 @@ class DiscordClient(Client):
             self.db_conn.initialize_server(str(guild.id), "discord")
             channels = await guild.fetch_channels()
             for channel in channels:
-                if channel.name == services["discord"]["channel"]:
+                if channel.name == self.configs.get("channel", "discord"):
                     count, _ = self.db_conn.get_current_count(str(guild.id))
                     msg = f"""Hello from Snowball bot.
 I just restarted, your last valid count was {count}"""
@@ -31,7 +31,7 @@ I just restarted, your last valid count was {count}"""
 
     async def on_message(self, message:Message):
         """handle new messages in the configured channel"""
-        if message.channel.name != services["discord"]["channel"]:
+        if message.channel.name != self.configs.get("channel", "discord"):
             return
 
         if message.author.id == self.user.id:
@@ -66,10 +66,10 @@ I just restarted, your last valid count was {count}"""
         else:
             await message.add_reaction('🌨')
 
-def run()->None:
+def run(configs)->None:
     """creates a new discord client"""
     intents = Intents.default()
     intents.message_content = True
     intents.emojis = True
-    bot = DiscordClient(intents=intents)
-    bot.run(token=services["discord"]["token"])
+    bot = DiscordClient(configs, intents=intents)
+    bot.run(token=configs.get("token", "discord"))

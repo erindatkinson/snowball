@@ -1,0 +1,10 @@
+services:
+  bot:
+    environment:
+      BOT_NAME: snowball-bot
+      BOT_LOG_LEVEL: INFO
+      BOT_DATABASE: data/snowball.db
+      BOT_DISCORD_CHANNEL: approved-channel
+      BOT_DISCORD_APP_KEY: app-id
+      BOT_DISCORD_PUBLIC_KEY: public-key
+      BOT_DISCORD_TOKEN: sdk.token
