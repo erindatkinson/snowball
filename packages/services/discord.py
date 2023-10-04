@@ -4,6 +4,7 @@ from multiprocessing import Lock
 from discord import Client, Intents, Message
 from packages.config.database import Database
 from packages.counting.counting import parse_message
+from packages.templates.help import help_string 
 
 class DiscordClient(Client):
     """the client for the discord api"""
@@ -29,12 +30,30 @@ class DiscordClient(Client):
 I just restarted, your last valid count was {count}"""
                     await channel.send(msg)
 
+    async def __check_commands(self, message:Message)->bool:
+        commands = {
+            "!commands": "",
+            "!help":  help_string,
+            "!highscore":  "high score is not implemented yet"
+        }
+        # this has to be done outside of the dict initialzation
+        commands["!commands"] = "\n".join(commands.keys())
+       
+        reply = commands.get(message.content)
+        if reply is not None:
+            await message.reply(reply)
+            return True
+        return False
+
     async def on_message(self, message:Message):
         """handle new messages in the configured channel"""
         if message.channel.name != self.configs.get("channel", "discord"):
             return
 
         if message.author.id == self.user.id:
+            return
+        
+        if await self.__check_commands(message):
             return
 
         # Try to get lock, if unable, mark as invalid
