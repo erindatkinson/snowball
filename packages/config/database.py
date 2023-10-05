@@ -47,7 +47,7 @@ class Database:
         query = """UPDATE servers
             SET count = ?,
             count_user = ?,
-            highscore = CASE WHEN high_score < ? THEN ? ELSE highs_core END
+            high_score = CASE WHEN high_score < ? THEN ? ELSE high_score END
             WHERE external_id = ?;"""
         with closing(self.conn.cursor()) as cur:
             cur.execute(query, (count, user, count, count, external_id, ))
