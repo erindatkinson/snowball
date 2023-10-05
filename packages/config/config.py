@@ -20,6 +20,8 @@ def init()->(Configs|Exception):
     parser.bind("name")
     parser.bind("database")
     parser.bind("log_level")
+    parser.bind("admin_guild", "discord")
+    parser.bind("admin_role", "discord")
     parser.bind("channel", "discord")
     parser.bind("app_key", "discord")
     parser.bind("public_key", "discord")
