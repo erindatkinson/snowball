@@ -1,6 +1,7 @@
 """module to manage database"""
 from logging import debug
 from sqlite3 import connect, Connection, IntegrityError
+from contextlib import closing
 class Database:
     """the object to manage the access of the database"""
     conn:Connection
@@ -15,10 +16,11 @@ class Database:
             external_id TEXT UNIQUE NOT NULL,
             service_type TEXT NOT NULL,
             count INT NOT NULL DEFAULT 0,
-            count_user TEXT DEFAULT ''
+            count_user TEXT DEFAULT '',
+            high_score int NOT NULL DEFAULT 0
             );'''
-        cur = self.conn.cursor()
-        cur.execute(servers)
+        with closing(self.conn.cursor()) as cur:
+            cur.execute(servers)
         self.conn.commit()
 
     def initialize_server(self, external_id:str, service_type:str):
@@ -26,28 +28,29 @@ class Database:
         insert = """INSERT INTO servers (external_id, service_type)
         VALUES (?, ?)"""
         try:
-            cur = self.conn.cursor()
-            cur.execute(insert, (external_id, service_type,))
+            with closing(self.conn.cursor()) as cur:
+                cur.execute(insert, (external_id, service_type,))
             self.conn.commit()
         except IntegrityError:
             debug("initializing server already initialized")
 
     def get_current_count(self, external_id:str):
         """get the current count for the server"""
-        cur = self.conn.cursor()
-        res = cur.execute(
-            "SELECT count, count_user FROM servers WHERE external_id=?;", 
-            (external_id,))
-        self.conn.commit()
-        return res.fetchone()
+        with closing(self.conn.cursor()) as cur:
+            res = cur.execute(
+                "SELECT count, count_user FROM servers WHERE external_id=?;", 
+                (external_id,))
+            return res.fetchone()
 
     def increment_count(self, external_id:str, user:str, count:int):
         """set the server count to the given count"""
-        increment = """UPDATE servers
-            SET count = ?,count_user = ?
+        query = """UPDATE servers
+            SET count = ?,
+            count_user = ?,
+            highscore = CASE WHEN high_score < ? THEN ? ELSE highs_core END
             WHERE external_id = ?;"""
-        cur = self.conn.cursor()
-        cur.execute(increment, (count, user, external_id,))
+        with closing(self.conn.cursor()) as cur:
+            cur.execute(query, (count, user, count, count, external_id, ))
         self.conn.commit()
 
     def reset_count(self, external_id:str):
@@ -55,5 +58,19 @@ class Database:
         reset = """UPDATE servers
             SET count = 0,count_user=NULL
             WHERE external_id = ?"""
-        cur = self.conn.cursor()
-        cur.execute(reset, (external_id,))
+        with closing(self.conn.cursor()) as cur:
+            cur.execute(reset, (external_id,))
+        self.conn.commit()
+
+    def get_highscore(self, external_id:str):
+        """get the high score for the server"""
+        query = """SELECT high_score
+        FROM servers
+        WHERE external_id = ?"""
+        with closing(self.conn.cursor()) as cur:
+            res = cur.execute(query, (external_id, ))
+            data = res.fetchone()
+            if data is not None:
+                return data[0]
+            else:
+                return "unknown"
