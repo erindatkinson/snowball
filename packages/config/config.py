@@ -8,26 +8,12 @@ class Configs:
     def __init__(self, configs):
         self.configs = configs
     
-    def must_get(self, key, namespace=None)->str:
-        """get but it raises key error if not found"""
+    def get(self, key, namespace=None)->str:
+        """get pulls a key from a namespace or raises a KeyError if not found"""
         if namespace is None:
             return self.configs["core"][key]
         else:
             return self.configs[namespace][key]
-
-    def get(self, key, namespace=None)->str|None:
-        """get pulls a key from a namespace or None if not found"""
-        if namespace is None:
-            core_keys = self.configs.get("core")
-            if core_keys is None:
-                return None
-            else:
-                return core_keys.get(key)
-        ns_keys = self.configs.get(namespace)
-        if ns_keys is None:
-            return None
-        else:
-            return ns_keys.get(key)
 
 def init()->(Configs|Exception):
     """initializes the configuration for the bot"""
