@@ -32,22 +32,28 @@ I just restarted, your last valid count was {count}"""
                     await channel.send(msg)
 
     async def __check_commands(self, message:Message)->bool:
+        # TODO: Move these to a command subsystem to call functions on match.
         commands = {
             "!commands": "",
             "!help":  help_string,
-            "!highscore":  f"Your server highscore is: {self.db_conn.get_highscore(str(message.guild.id))}"
-            
+            "!highscore": "Your server highscore is:"
         }
+
         # this has to be done outside of the dict initialzation
         commands["!commands"] = "\n".join(commands.keys())
-       
+
+        # Check if is shutdown command, and if so, if allowed to shutdown
         if message.content.startswith("!shutdown"):
-                await self.__shutdown(message)
-                return True
+            await self.__shutdown(message)
+            return True
+
+        # check if known command
         reply = commands.get(message.content)
         if reply is not None:
+            # TODO: wrap highscore in its own function that only would get called if match.
+            if reply.startswith("Your server"):
+                reply = reply +  self.db_conn.get_highscore(str(message.guild.id))
             await message.reply(reply)
-            
             return True
         return False
 
@@ -58,7 +64,7 @@ I just restarted, your last valid count was {count}"""
 
         if message.author.id == self.user.id:
             return
-        
+
         if await self.__check_commands(message):
             return
 
