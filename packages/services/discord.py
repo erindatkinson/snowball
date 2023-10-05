@@ -14,6 +14,7 @@ class DiscordClient(Client):
         self._lock = Lock()
         self.configs = configs
         self.db_conn = Database(configs.get("database"))
+        self.emoji_string = ""
         super().__init__(intents=intents)
 
     async def on_ready(self):
@@ -23,6 +24,12 @@ class DiscordClient(Client):
         guilds = [guild async for guild in self.fetch_guilds()]
         for guild in guilds:
             self.db_conn.initialize_server(str(guild.id), "discord")
+
+            emoji_name = self.configs.get("reset_emoji", "discord")
+            for emoji in await guild.fetch_emojis():
+                if emoji.name == emoji_name:
+                    self.emoji_string = str(emoji)
+
             channels = await guild.fetch_channels()
             for channel in channels:
                 if channel.name == self.configs.get("channel", "discord"):
@@ -36,7 +43,7 @@ I just restarted, your last valid count was {count}"""
         commands = {
             "!commands": "",
             "!help":  help_string,
-            "!highscore": "Your server highscore is:"
+            "!highscore": "Your server highscore is: "
         }
 
         # this has to be done outside of the dict initialzation
@@ -52,7 +59,7 @@ I just restarted, your last valid count was {count}"""
         if reply is not None:
             # TODO: wrap highscore in its own function that only would get called if match.
             if reply.startswith("Your server"):
-                reply = reply +  self.db_conn.get_highscore(str(message.guild.id))
+                reply = reply + str(self.db_conn.get_highscore(str(message.guild.id)))
             await message.reply(reply)
             return True
         return False
@@ -82,7 +89,8 @@ I just restarted, your last valid count was {count}"""
                 if this_count == -1:
                     self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
-                    await message.channel.send('the cycle begins anew')
+
+                    await message.channel.send(f"{self.emoji_string} The cycle begins anew")
                 elif this_count == count + 1:
                     self.db_conn.increment_count(
                         str(message.guild.id),
@@ -92,7 +100,7 @@ I just restarted, your last valid count was {count}"""
                 else:
                     self.db_conn.reset_count(str(message.guild.id))
                     await message.add_reaction('❎')
-                    await message.channel.send('the cycle begins anew')         
+                    await message.channel.send(f"{self.emoji_string} The cycle begins anew")
             self._lock.release()
         else:
             await message.add_reaction('🌨')

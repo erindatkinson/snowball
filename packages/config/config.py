@@ -26,6 +26,7 @@ def init()->(Configs|Exception):
     parser.bind("app_key", "discord")
     parser.bind("public_key", "discord")
     parser.bind("token", "discord")
+    parser.bind("reset_emoji", "discord")
     data = parser.parse()
     configs = Configs(data)
     init_logs(configs.get("name"), configs.get("log_level"))
