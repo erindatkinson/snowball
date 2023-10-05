@@ -7,7 +7,7 @@ class Configs:
     """class to manage the various configs for the app"""
     def __init__(self, configs):
         self.configs = configs
-    
+
     def get(self, key, namespace=None)->str:
         """get pulls a key from a namespace or raises a KeyError if not found"""
         if namespace is None:
@@ -29,5 +29,5 @@ def init()->(Configs|Exception):
     parser.bind("token", "discord")
     data = parser.parse()
     configs = Configs(data)
-    init_logs(configs.must_get("name"), configs.must_get("log_level"))
+    init_logs(configs.get("name"), configs.get("log_level"))
     return configs
