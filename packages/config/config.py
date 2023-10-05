@@ -12,8 +12,7 @@ class Configs:
         """get pulls a key from a namespace or raises a KeyError if not found"""
         if namespace is None:
             return self.configs["core"][key]
-        else:
-            return self.configs[namespace][key]
+        return self.configs[namespace][key]
 
 def init()->(Configs|Exception):
     """initializes the configuration for the bot"""
