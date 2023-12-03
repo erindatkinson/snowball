@@ -6,8 +6,8 @@ services:
       BOT_DATABASE: data/snowball.db
       BOT_DISCORD_CHANNEL: approved-channel
       BOT_DISCORD_RESET_EMOJI: negative_squared_cross_mark
-      BOT_DISCORD_ADMIN_GUILD: id-for-admin-server
-      BOT_DISCORD_ADMIN_ROLE: id-for-admin-role
+      BOT_DISCORD_ADMIN_GUILD: name-for-admin-server
+      BOT_DISCORD_ADMIN_ROLE: name-for-admin-role
       BOT_DISCORD_APP_KEY: app-id
       BOT_DISCORD_PUBLIC_KEY: public-key
       BOT_DISCORD_TOKEN: sdk.token
