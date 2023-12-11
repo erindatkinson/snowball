@@ -6,6 +6,7 @@ from discord import Client, Intents, Message
 from packages.config.database import Database
 from packages.counting.counting import parse_message
 from packages.templates.help import help_string, status_string
+from packages.templates.reset import reset_string
 
 
 class DiscordClient(Client):
@@ -98,7 +99,11 @@ I just restarted, your last valid count was {count}"""
                     await message.add_reaction("❎")
 
                     await message.channel.send(
-                        f"{self.emoji_string} The cycle begins anew"
+                        reset_string.format(
+                            count=count,
+                            this_count=this_count,
+                            emoji_string=self.emoji_string,
+                        )
                     )
                 elif this_count == count + 1:
                     self.db_conn.increment_count(
@@ -109,7 +114,11 @@ I just restarted, your last valid count was {count}"""
                     self.db_conn.reset_count(str(message.guild.name))
                     await message.add_reaction("❎")
                     await message.channel.send(
-                        f"{self.emoji_string} The cycle begins anew"
+                        reset_string.format(
+                            count=count,
+                            this_count=this_count,
+                            emoji_string=self.emoji_string,
+                        )
                     )
             self._lock.release()
         else:
