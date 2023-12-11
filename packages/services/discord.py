@@ -5,7 +5,7 @@ from multiprocessing import Lock
 from discord import Client, Intents, Message
 from packages.config.database import Database
 from packages.counting.counting import parse_message
-from packages.templates.help import help_string
+from packages.templates.help import help_string, status_string
 
 
 class DiscordClient(Client):
@@ -16,6 +16,12 @@ class DiscordClient(Client):
         self.configs = configs
         self.db_conn = Database(configs.get("database"))
         self.emoji_string = ""
+        self.commands = {
+            "!commands": self.__cmd_commands,
+            "!help": self.__cmd_help,
+            "!highscore": self.__cmd_highscore,
+            "!status": self.__cmd_status,
+        }
         super().__init__(intents=intents)
 
     async def on_ready(self):
@@ -39,30 +45,31 @@ I just restarted, your last valid count was {count}"""
                     await channel.send(msg)
 
     async def __check_commands(self, message: Message) -> bool:
-        # TODO: Move these to a command subsystem to call functions on match.
-        commands = {
-            "!commands": "",
-            "!help": help_string,
-            "!highscore": "Your server highscore is: ",
-        }
-
-        # this has to be done outside of the dict initialzation
-        commands["!commands"] = "\n".join(commands.keys())
-
-        # Check if is shutdown command, and if so, if allowed to shutdown
-        if message.content.startswith("!shutdown"):
-            await self.__shutdown(message)
-            return True
-
         # check if known command
-        reply = commands.get(message.content)
-        if reply is not None:
-            # TODO: wrap highscore in its own function that only would get called if match.
-            if reply.startswith("Your server"):
-                reply = reply + str(self.db_conn.get_highscore(str(message.guild.name)))
-            await message.reply(reply)
+        cmd_func = self.commands.get(message.content)
+        if cmd_func is not None:
+            await message.reply(cmd_func(str(message.guild.name)))
             return True
         return False
+
+    def __cmd_status(self, guild: str) -> str:
+        """method for getting !status response"""
+        count, _ = self.db_conn.get_current_count(guild)
+        highscore = self.db_conn.get_highscore(guild)
+        return status_string.format(count=count, highscore=highscore)
+
+    def __cmd_highscore(self, guild: str) -> str:
+        """method for getting !highscore response"""
+        highscore = self.db_conn.get_highscore(guild)
+        return f"Your server highscore is {highscore}"
+
+    def __cmd_help(self, guild: str) -> str:
+        """method for getting !help response"""
+        return help_string
+
+    def __cmd_commands(self, guild: str) -> str:
+        """method for getting !commands response"""
+        return "\n".join(self.commands.keys())
 
     async def on_message(self, message: Message):
         """handle new messages in the configured channel"""
@@ -107,16 +114,6 @@ I just restarted, your last valid count was {count}"""
             self._lock.release()
         else:
             await message.add_reaction("🌨")
-
-    async def __shutdown(self, message: Message):
-        if message.guild.name == self.configs.get("admin_guild", "discord"):
-            for role in message.author.roles:
-                if self.configs.get("admin_role", "discord") == role.name:
-                    await message.channel.send(
-                        f"{self.configs.get('name')} is shutting down"
-                    )
-                    sleep(2)
-                    raise KeyboardInterrupt
 
 
 def run(configs) -> None:
