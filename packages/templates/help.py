@@ -22,3 +22,6 @@ are as follows: if the expected number is 32, you would be able to write `2 3 ^ 
 to 2^3 * 4 with infix notation), or if the expected number is 1, you could write `_3 _3 * 16 2 / -` (which
 would be like writing `( -3 * -3 ) - ( 16 / 2 )` with infix)
 """
+
+status_string = """The last valid count was {count}
+The server highscore is: {highscore}"""
