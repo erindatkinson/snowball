@@ -1,4 +1,5 @@
 """module maaging counting state"""
+
 from subprocess import run, CalledProcessError
 from logging import debug
 from re import search
@@ -25,7 +26,7 @@ def parse_message(message: str) -> tuple[int, bool]:
             return (-1, False)
 
     # check to see if there's like text in the message after some math
-    pattern = r"[a-zA-Z]"
+    pattern = r"[^0-9\/\*\^\_\-\+ ]"
     search_match = search(pattern, message)
     if search_match is not None:
         math = message[: search_match.start()]
