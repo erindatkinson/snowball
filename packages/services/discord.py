@@ -90,7 +90,6 @@ I just restarted, your last valid count was {count}"""
                 count, user = self.db_conn.get_current_count(str(message.guild.name))
                 this_count, countable = parse_message(message.content)
                 if not countable:
-                    self._lock.release()
                     return
                 if user == str(message.author.id):
                     await message.add_reaction("🎭")
