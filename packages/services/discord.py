@@ -1,4 +1,5 @@
 """module managing connecting to the discord api"""
+
 import logging
 from time import sleep
 from multiprocessing import Lock
@@ -85,42 +86,45 @@ I just restarted, your last valid count was {count}"""
 
         # Try to get lock, if unable, mark as invalid
         if self._lock.acquire(block=False):
-            count, user = self.db_conn.get_current_count(str(message.guild.name))
-            this_count, countable = parse_message(message.content)
-            if not countable:
-                self._lock.release()
-                return
-            if user == str(message.author.id):
-                await message.add_reaction("🎭")
-                await message.channel.send("a counting so nice you did it twice?")
-            else:
-                if this_count == -1:
-                    self.db_conn.reset_count(message.guild.name)
-                    await message.add_reaction("❎")
-
-                    await message.channel.send(
-                        reset_string.format(
-                            count=count,
-                            this_count=this_count,
-                            emoji_string=self.emoji_string,
-                        )
-                    )
-                elif this_count == count + 1:
-                    self.db_conn.increment_count(
-                        str(message.guild.name), str(message.author.id), count + 1
-                    )
-                    await message.add_reaction("✅")
+            try:
+                count, user = self.db_conn.get_current_count(str(message.guild.name))
+                this_count, countable = parse_message(message.content)
+                if not countable:
+                    self._lock.release()
+                    return
+                if user == str(message.author.id):
+                    await message.add_reaction("🎭")
+                    await message.channel.send("a counting so nice you did it twice?")
                 else:
-                    self.db_conn.reset_count(str(message.guild.name))
-                    await message.add_reaction("❎")
-                    await message.channel.send(
-                        reset_string.format(
-                            count=count,
-                            this_count=this_count,
-                            emoji_string=self.emoji_string,
+                    if this_count == -1:
+                        self.db_conn.reset_count(message.guild.name)
+                        await message.add_reaction("❎")
+                        await message.channel.send(
+                            reset_string.format(
+                                count=count,
+                                this_count=this_count,
+                                emoji_string=self.emoji_string,
+                            )
                         )
-                    )
-            self._lock.release()
+                    elif this_count == count + 1:
+                        self.db_conn.increment_count(
+                            str(message.guild.name), str(message.author.id), count + 1
+                        )
+                        await message.add_reaction("✅")
+                    else:
+                        self.db_conn.reset_count(str(message.guild.name))
+                        await message.add_reaction("❎")
+                        await message.channel.send(
+                            reset_string.format(
+                                count=count,
+                                this_count=this_count,
+                                emoji_string=self.emoji_string,
+                            )
+                        )
+            except Exception as e:
+                logging.error(e)
+            finally:
+                self._lock.release()
         else:
             await message.add_reaction("🌨")
 
