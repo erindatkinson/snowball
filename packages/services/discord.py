@@ -123,7 +123,7 @@ I just restarted, your last valid count was {count}"""
             except Exception as e:
                 logging.error(e)
             finally:
-                sleep(2)
+                sleep(float(self.configs.get("mutex_hold", "discord")))
                 self._lock.release()
         else:
             await message.add_reaction("🌨")
