@@ -3,18 +3,21 @@
 from packages.expectenv.expectenv import ExpectEnvParser
 from .logging import init_logs
 
+
 class Configs:
     """class to manage the various configs for the app"""
+
     def __init__(self, configs):
         self.configs = configs
 
-    def get(self, key, namespace=None)->str:
+    def get(self, key, namespace=None) -> str:
         """get pulls a key from a namespace or raises a KeyError if not found"""
         if namespace is None:
             return self.configs["core"][key]
         return self.configs[namespace][key]
 
-def init()->(Configs|Exception):
+
+def init() -> Configs | Exception:
     """initializes the configuration for the bot"""
     parser = ExpectEnvParser("bot")
     parser.bind("name")
@@ -27,6 +30,7 @@ def init()->(Configs|Exception):
     parser.bind("public_key", "discord")
     parser.bind("token", "discord")
     parser.bind("reset_emoji", "discord")
+    parser.bind("mutex_hold", "discord")
     data = parser.parse()
     configs = Configs(data)
     init_logs(configs.get("name"), configs.get("log_level"))

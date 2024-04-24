@@ -100,7 +100,7 @@ I just restarted, your last valid count was {count}"""
                         await message.add_reaction("❎")
                         await message.channel.send(
                             reset_string.format(
-                                count=count,
+                                count=count + 1,
                                 this_count=this_count,
                                 emoji_string=self.emoji_string,
                             )
@@ -115,7 +115,7 @@ I just restarted, your last valid count was {count}"""
                         await message.add_reaction("❎")
                         await message.channel.send(
                             reset_string.format(
-                                count=count,
+                                count=count + 1,
                                 this_count=this_count,
                                 emoji_string=self.emoji_string,
                             )
@@ -123,6 +123,7 @@ I just restarted, your last valid count was {count}"""
             except Exception as e:
                 logging.error(e)
             finally:
+                sleep(float(self.configs.get("mutex_hold", "discord")))
                 self._lock.release()
         else:
             await message.add_reaction("🌨")

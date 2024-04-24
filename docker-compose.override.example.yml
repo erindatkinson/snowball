@@ -11,3 +11,4 @@ services:
       BOT_DISCORD_APP_KEY: app-id
       BOT_DISCORD_PUBLIC_KEY: public-key
       BOT_DISCORD_TOKEN: sdk.token
+      BOT_DISCORD_MUTEX_HOLD: 2
