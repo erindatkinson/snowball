@@ -6,6 +6,8 @@ name = "pypi"
 [packages]
 fire = "*"
 "discord.py" = "*"
+datetime = "*"
+python-dateutil = "*"
 
 [dev-packages]
 
