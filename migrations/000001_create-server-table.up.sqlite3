@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS servers (
+            external_id TEXT UNIQUE NOT NULL,
+            service_type TEXT NOT NULL,
+            count INT NOT NULL DEFAULT 0,
+            count_user TEXT DEFAULT '',
+            high_score int NOT NULL DEFAULT 0
+            );
