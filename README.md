@@ -15,7 +15,10 @@ _Image by [Jill Wellington][image-credit]_
 ### Requisites
 
 * Python 3.8+
+* golang-migrate
+  * [install instructions](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
 * Docker + docker-compose
+  * Only if you want to run this locally
 * If you plan to run this on your own:
   * [Set up discord bot account][discord-bot]
   * :warning: This, again, is only if you intend to host the bot yourself.
@@ -33,7 +36,12 @@ The bot is currently set up to run in a docker container for your convenience, b
 
 ### Initializing locally
 
+* Run `make migrate` to set up/update the local db
 * Run `make run` to start the container in docker-compose
+
+### Note
+
+There's a near infinite number of migration tools to choose from, and using a golang one in a python project may seem odd, but I like it best and am most familiar with it, so that's what's doing.
 
 ## Bot Usage
 
