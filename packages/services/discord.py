@@ -111,6 +111,9 @@ I just restarted, your last valid count was {count}"""
                         )
                         await message.add_reaction("✅")
                     else:
+                        cycle_time = self.db_conn.get_current_cycle_time(
+                            str(message.guild.name)
+                        )
                         self.db_conn.reset_count(str(message.guild.name))
                         await message.add_reaction("❎")
                         await message.channel.send(
@@ -118,6 +121,7 @@ I just restarted, your last valid count was {count}"""
                                 count=count + 1,
                                 this_count=this_count,
                                 emoji_string=self.emoji_string,
+                                cycle_time_string=cycle_time,
                             )
                         )
             except Exception as e:
