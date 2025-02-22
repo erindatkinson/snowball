@@ -16,34 +16,16 @@ class Database:
 
     def __init__(self, db_file: str):
         self.conn = connect(db_file)
-        self.__schemas()
-
-    def __schemas(self):
-        """build out the schema for the server data"""
-        servers = """CREATE TABLE IF NOT EXISTS servers (
-            external_id TEXT UNIQUE NOT NULL,
-            service_type TEXT NOT NULL,
-            count INT NOT NULL DEFAULT 0,
-            count_user TEXT DEFAULT '',
-            high_score int NOT NULL DEFAULT 0,
-            cycle_start int NOT NULL DEFAULT 0
-            );"""
-        with closing(self.conn.cursor()) as cur:
-            cur.execute(servers)
-        self.conn.commit()
 
     def initialize_server(self, external_id: str, service_type: str):
         """initiallize a server data store for counting"""
-        insert = """INSERT INTO servers (external_id, service_type)
-        VALUES (?, ?)"""
+        insert = """INSERT INTO servers (external_id, service_type, cycle_start)
+        VALUES (?, ?, ?)"""
         try:
             with closing(self.conn.cursor()) as cur:
                 cur.execute(
                     insert,
-                    (
-                        external_id,
-                        service_type,
-                    ),
+                    (external_id, service_type, datetime.now().timestamp()),
                 )
             self.conn.commit()
         except IntegrityError:
@@ -65,7 +47,7 @@ class Database:
                 "SELECT cycle_start FROM servers where external_id=?;",
                 (external_id,),
             )
-            epoch_start_time = int(res.fetchone())
+            epoch_start_time = int(res.fetchone()[0])
             start_dt = datetime.fromtimestamp(epoch_start_time)
             delta = relativedelta(datetime.now(), start_dt)
             return duration_printer(delta)
