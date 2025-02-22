@@ -1,6 +1,6 @@
 """module for help string template"""
 
-help_string = """
+HELP_STRING = """
 ## Snowball-bot
 
 A discord bot to enable a shared, sisyphean task of "number go up"
@@ -23,5 +23,5 @@ to 2^3 * 4 with infix notation), or if the expected number is 1, you could write
 would be like writing `( -3 * -3 ) - ( 16 / 2 )` with infix)
 """
 
-status_string = """The last valid count was {count}
+STATUS_STRING = """The last valid count was {count}
 The server highscore is: {highscore}"""
