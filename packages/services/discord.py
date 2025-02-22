@@ -6,8 +6,8 @@ from multiprocessing import Lock
 from discord import Client, Intents, Message
 from packages.config.database import Database
 from packages.counting.counting import parse_message
-from packages.templates.help import help_string, status_string
-from packages.templates.reset import reset_string
+from packages.templates.help import HELP_STRING, STATUS_STRING
+from packages.templates.reset import RESET_STRING
 
 
 class DiscordClient(Client):
@@ -58,7 +58,7 @@ I just restarted, your last valid count was {count}"""
         """method for getting !status response"""
         count, _ = self.db_conn.get_current_count(guild)
         highscore = self.db_conn.get_highscore(guild)
-        return status_string.format(count=count, highscore=highscore)
+        return STATUS_STRING.format(count=count, highscore=highscore)
 
     def __cmd_highscore(self, guild: str) -> str:
         """method for getting !highscore response"""
@@ -67,7 +67,7 @@ I just restarted, your last valid count was {count}"""
 
     def __cmd_help(self, guild: str) -> str:
         """method for getting !help response"""
-        return help_string
+        return HELP_STRING
 
     def __cmd_commands(self, guild: str) -> str:
         """method for getting !commands response"""
@@ -99,7 +99,7 @@ I just restarted, your last valid count was {count}"""
                         self.db_conn.reset_count(message.guild.name)
                         await message.add_reaction("❎")
                         await message.channel.send(
-                            reset_string.format(
+                            RESET_STRING.format(
                                 count=count + 1,
                                 this_count=this_count,
                                 emoji_string=self.emoji_string,
@@ -111,13 +111,17 @@ I just restarted, your last valid count was {count}"""
                         )
                         await message.add_reaction("✅")
                     else:
+                        cycle_time = self.db_conn.get_current_cycle_time(
+                            str(message.guild.name)
+                        )
                         self.db_conn.reset_count(str(message.guild.name))
                         await message.add_reaction("❎")
                         await message.channel.send(
-                            reset_string.format(
+                            RESET_STRING.format(
                                 count=count + 1,
                                 this_count=this_count,
                                 emoji_string=self.emoji_string,
+                                cycle_time_string=cycle_time,
                             )
                         )
             except Exception as e:

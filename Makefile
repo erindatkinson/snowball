@@ -8,6 +8,11 @@ build:
 run: build
 	docker-compose up -d
 
+## migrate:		migrate db schema
+migrate:
+	mkdir -p ./data
+	migrate -source file://migrations -database sqlite3://data/snowball.db up
+
 ## help:		prints make target help information from comments in makefile.
 help: Makefile
 	@sed -n 's/^##//p' $< | sort
