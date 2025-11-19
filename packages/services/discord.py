@@ -3,11 +3,19 @@
 import logging
 from time import sleep
 from multiprocessing import Lock
-from discord import Client, Intents, Message
+from multiprocessing.pool import ThreadPool as Pool
+from datetime import datetime as dt
+
+from functools import reduce
+from dateutil import parser as dtparser
+from dateutil import relativedelta as rtd
+from discord import Client, Intents, Message, DMChannel
 from packages.config.database import Database
 from packages.counting.counting import parse_message
 from packages.templates.help import HELP_STRING, STATUS_STRING
 from packages.templates.reset import RESET_STRING
+from packages.templates.stats import success, struggle
+from packages.counting.stats import process_message, coalesce, OUTPUT_KEYS
 
 
 class DiscordClient(Client):
@@ -65,16 +73,46 @@ I just restarted, your last valid count was {count}"""
         highscore = self.db_conn.get_highscore(guild)
         return f"Your server highscore is {highscore}"
 
-    def __cmd_help(self, guild: str) -> str:
+    def __cmd_help(self, _: str) -> str:
         """method for getting !help response"""
         return HELP_STRING
 
-    def __cmd_commands(self, guild: str) -> str:
+    def __cmd_commands(self, _: str) -> str:
         """method for getting !commands response"""
         return "\n".join(self.commands.keys())
 
+    async def __cmd_recap(self, trigger: Message):
+        start = dtparser.parse(f"{(dt.now() - rtd.relativedelta(years=1)).year}-01-01")
+        channel = trigger.channel
+
+        pool = Pool(5)
+
+        messages = [
+            m
+            async for m in channel.history(after=start)
+            if m.author.id == trigger.author.id
+        ]
+        logging.info(
+            "Pulled %d messages from channel history for %s",
+            len(messages),
+            trigger.author.name,
+        )
+
+        data = pool.map(process_message, messages)
+        output = reduce(coalesce, data, {f"{k}-s": 0 for k in OUTPUT_KEYS})
+
+        if output["success-s"] > output["failure-s"]:
+            msg_out = success(start.year, output)
+        else:
+            msg_out = struggle(start.year, output)
+
+        await trigger.author.send(msg_out)
+
     async def on_message(self, message: Message):
         """handle new messages in the configured channel"""
+        if isinstance(message.channel, DMChannel):
+            return
+
         if message.channel.name != self.configs.get("channel", "discord"):
             return
 
@@ -82,6 +120,10 @@ I just restarted, your last valid count was {count}"""
             return
 
         if await self.__check_commands(message):
+            return
+
+        if message.content == "!recap":
+            await self.__cmd_recap(message)
             return
 
         # Try to get lock, if unable, mark as invalid
