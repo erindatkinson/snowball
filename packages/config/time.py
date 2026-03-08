@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 def duration_printer(duration: relativedelta) -> str:
     """print duration"""
     output = []
-    attrs = ["years", "months", "days", "minutes", "seconds"]
+    attrs = ["years", "months", "days", "hours", "minutes", "seconds"]
     for this_attr in attrs:
         this_value = getattr(duration, this_attr)
         if this_value != 0:

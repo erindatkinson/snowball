@@ -31,6 +31,7 @@ class DiscordClient(Client):
             "!help": self.__cmd_help,
             "!highscore": self.__cmd_highscore,
             "!status": self.__cmd_status,
+            "!recap": self.__cmd_recap,
         }
         super().__init__(intents=intents)
 
@@ -52,13 +53,51 @@ class DiscordClient(Client):
                     count, _ = self.db_conn.get_current_count(str(guild.name))
                     msg = f"""Hello from Snowball bot.
 I just restarted, your last valid count was {count}"""
-                    await channel.send(msg)
+                    await channel.send(msg)  # type: ignore
+
+    async def on_message(self, message: Message):
+        """handle new messages in the configured channel"""
+        # Don't respond to DMs
+        if isinstance(message.channel, DMChannel):
+            return
+
+        # Don't respond outside of the configured channel
+        if message.channel.name != self.configs.get("channel", "discord"):  # type: ignore
+            return
+
+        # Don't respond to messages sent from itself
+        if message.author.id == self.user.id:  # type: ignore
+            return
+
+        # Don't check counts if the message was a command
+        if await self.__check_commands(message):
+            return
+
+        # Try to get lock, if unable, mark as invalid
+        if self._lock.acquire(block=False):
+            try:
+                count, user = self.db_conn.get_current_count(str(message.guild.name))  # type: ignore
+                this_count, countable = parse_message(message.content)
+                if not countable:
+                    return
+                if user == str(message.author.id):
+                    await message.add_reaction("🎭")
+                    await message.channel.send("a counting so nice you did it twice?")
+                else:
+                    await self.__mark_message(message, this_count, count)
+            except Exception as e:
+                logging.error(e)
+            finally:
+                sleep(float(self.configs.get("mutex_hold", "discord")))
+                self._lock.release()
+        else:
+            await message.add_reaction("🌨")
 
     async def __check_commands(self, message: Message) -> bool:
         # check if known command
         cmd_func = self.commands.get(message.content)
         if cmd_func is not None:
-            await message.reply(cmd_func(str(message.guild.name)))
+            await message.reply(cmd_func(str(message.guild.name)))  # type: ignore
             return True
         return False
 
@@ -108,71 +147,40 @@ I just restarted, your last valid count was {count}"""
 
         await trigger.author.send(msg_out)
 
-    async def on_message(self, message: Message):
-        """handle new messages in the configured channel"""
-        if isinstance(message.channel, DMChannel):
-            return
-
-        if message.channel.name != self.configs.get("channel", "discord"):
-            return
-
-        if message.author.id == self.user.id:
-            return
-
-        if await self.__check_commands(message):
-            return
-
-        if message.content == "!recap":
-            await self.__cmd_recap(message)
-            return
-
-        # Try to get lock, if unable, mark as invalid
-        if self._lock.acquire(block=False):
-            try:
-                count, user = self.db_conn.get_current_count(str(message.guild.name))
-                this_count, countable = parse_message(message.content)
-                if not countable:
-                    return
-                if user == str(message.author.id):
-                    await message.add_reaction("🎭")
-                    await message.channel.send("a counting so nice you did it twice?")
-                else:
-                    if this_count == -1:
-                        self.db_conn.reset_count(message.guild.name)
-                        await message.add_reaction("❎")
-                        await message.channel.send(
-                            RESET_STRING.format(
-                                count=count + 1,
-                                this_count=this_count,
-                                emoji_string=self.emoji_string,
-                            )
-                        )
-                    elif this_count == count + 1:
-                        self.db_conn.increment_count(
-                            str(message.guild.name), str(message.author.id), count + 1
-                        )
-                        await message.add_reaction("✅")
-                    else:
-                        cycle_time = self.db_conn.get_current_cycle_time(
-                            str(message.guild.name)
-                        )
-                        self.db_conn.reset_count(str(message.guild.name))
-                        await message.add_reaction("❎")
-                        await message.channel.send(
-                            RESET_STRING.format(
-                                count=count + 1,
-                                this_count=this_count,
-                                emoji_string=self.emoji_string,
-                                cycle_time_string=cycle_time,
-                            )
-                        )
-            except Exception as e:
-                logging.error(e)
-            finally:
-                sleep(float(self.configs.get("mutex_hold", "discord")))
-                self._lock.release()
+    async def __mark_message(self, message: Message, this_count: int, count: int):
+        """Handle marking message"""
+        # for failed count
+        if this_count == -1:
+            self.db_conn.reset_count(message.guild.name)  # type: ignore
+            await message.add_reaction("❎")
+            await message.channel.send(
+                RESET_STRING.format(
+                    count=count + 1,
+                    this_count=this_count,
+                    emoji_string=self.emoji_string,
+                )
+            )
+        # for successful count
+        elif this_count == count + 1:
+            self.db_conn.increment_count(
+                str(message.guild.name), str(message.author.id), count + 1  # type: ignore
+            )
+            await message.add_reaction("✅")
+        # for other failures
         else:
-            await message.add_reaction("🌨")
+            cycle_time = self.db_conn.get_current_cycle_time(
+                str(message.guild.name)  # type: ignore
+            )
+            self.db_conn.reset_count(str(message.guild.name))  # type: ignore
+            await message.add_reaction("❎")
+            await message.channel.send(
+                RESET_STRING.format(
+                    count=count + 1,
+                    this_count=this_count,
+                    emoji_string=self.emoji_string,
+                    cycle_time_string=cycle_time,
+                )
+            )
 
 
 def run(configs) -> None:
